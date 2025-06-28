@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple App with Sidebar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      background-color: #2c3e50;
+      color: white;
+      width: 200px;
+      transition: width 0.3s;
+      overflow: hidden;
+    }
+
+    .sidebar.collapsed {
+      width: 60px;
+    }
+
+    .sidebar h3 {
+      padding: 16px;
+      margin: 0;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 12px 16px;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      background-color: #34495e;
+    }
+
+    .toggle-btn {
+      background-color: #1abc9c;
+      color: white;
+      width: 100%;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      width: 300px;
+      border-radius: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .success-message {
+      color: green;
+      margin-top: 10px;
+    }
+
+    #loginPage {
+      width: 100%;
+      padding: 40px;
+    }
+
+    /* Hide sidebar on login page */
+    body.login-mode .sidebar,
+    body.login-mode .toggle-btn {
+      display: none;
+    }
+  </style>
+</head>
+<body class="login-mode">
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+  <h3>Menu</h3>
+  <a href="#" onclick="navigate('dashboardPage')">Dashboard</a>
+  <a href="#" onclick="navigate('listPage')">Registration List</a>
+  <a href="#" onclick="navigate('maintenancePage')">Maintenance</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <!-- Login Page -->
+  <div id="loginPage" class="page active">
+    <h2>Login</h2>
+    <div class="form-group">
+      <input type="text" id="username" placeholder="Enter username">
+    </div>
+    <div class="form-group">
+      <input type="password" id="password" placeholder="Enter password">
+    </div>
+    <button class="btn" onclick="login()">Login</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboardPage" class="page">
+    <h2>Dashboard</h2>
+    <p>Welcome to the dashboard. Use the sidebar to navigate.</p>
+  </div>
+
+  <!-- List Page -->
+  <div id="listPage" class="page">
+    <h2>Registration List</h2>
+    <button class="btn" onclick="openModal()">Add Entry</button>
+    <ul id="registrationList"></ul>
+    <div class="success-message" id="successMessage"></div>
+  </div>
+
+  <!-- Maintenance Page -->
+  <div id="maintenancePage" class="page">
+    <h2>Maintenance Page</h2>
+    <p>System under maintenance. Please check back later.</p>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div id="formModal" class="modal">
+  <div class="modal-content">
+    <h3>Register</h3>
+    <div class="form-group"><input type="text" id="name" placeholder="Name" /></div>
+    <div class="form-group"><input type="number" id="age" placeholder="Age" /></div>
+    <div class="form-group"><input type="text" id="destination" placeholder="Destination" /></div>
+    <div class="form-group"><input type="text" id="department" placeholder="Department" /></div>
+    <div class="form-group"><input type="date" id="dob" placeholder="Date of Birth" /></div>
+    <button class="btn" onclick="submitForm()">Submit</button>
+    <button class="btn" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar=
+    document.getElementById('sidebar').classList.toggle('collapsed');
+  }
+
+  function navigate(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+
+  function login() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    if (user && pass) {
+      document.body.classList.remove('login-mode');
+      navigate('dashboardPage');
+    } else {
+      alert("Please enter username and password");
+    }
+  }
+
+  function logout() {
+    document.body.classList.add('login-mode');
+    navigate('loginPage');
+  }
+
+  function openModal() {
+    document.getElementById('formModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('formModal').style.display = 'none';
+  }
+
+  function submitForm() {
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const destination = document.getElementById('destination').value;
+    const department = document.getElementById('department').value;
+    const dob = document.getElementById('dob').value;
+
+    if (!name || !age || !destination || !department || !dob) {
+      alert("All fields are required");
+      return;
+    }
+
+    const list = document.getElementById('registrationList');
+    const li = document.createElement('li');
+    li.textContent = `${name} - ${department} - ${destination}`;
+    list.appendChild(li);
+
+    document.getElementById('successMessage').textContent = `Successfully registered: ${name}`;
+    ['name', 'age', 'destination', 'department', 'dob'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+
+    closeModal();
+  }
+</script>
+
+</body>
+</html>
+
+
